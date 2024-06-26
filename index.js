@@ -26,21 +26,21 @@ app.get('/urls', async (req, res) => {
         .from('Urls')
         .select('*');
     if (error) {
-        res.status(500).send('Error al obtener las URLs' + error.message);
+        res.status(500).send('Error al obtener las URLs ' + error.message);
     } else {
         res.send(urls);
     }
 });
 
 app.get('/:id', async (req, res) => {
-    let { data, error } = await supabase
+    let { data: urls, error } = await supabase
         .from('Urls')
         .select('*')
         .eq({ id: req.params.id });
     if (error) {
-        res.status(500).send('Error al obtener la URL');
+        res.status(500).send('Error al obtener la URL ' + error.message);
     } else {
-        res.send(data);
+        res.send(urls);
     }
 });
 
@@ -49,35 +49,35 @@ app.post('/urls', async (req, res) => {
     const idUser = req.body.idUser;
     const shortUrl = 'acortado.vercel.app/' + id;
     if(!idUser) {
-        let { data, error } = await supabase
+        let { data: urls, error } = await supabase
             .from('Urls')
             .insert([{ long_Url: url, short_Url: shortUrl}]);
         if (error) {
-            res.status(500).send('Error al insertar la URL');
+            res.status(500).send('Error al insertar la URL ' + error.message);
         } else {
-            res.send(data);
+            res.send(urls);
         }
     }else{
-        let { data, error } = await supabase
+        let { data: urls, error } = await supabase
             .from('Urls')
             .insert([{ long_Url: url, short_Url: shortUrl, user: idUser}]);
         if (error) {
-            res.status(500).send('Error al insertar la URL');
+            res.status(500).send('Error al insertar la URL ' + error.message);
         } else {
-            res.send(data);
+            res.send(urls);
         }
     }
 });
 
 app.delete('/:id', async (req, res) => {
-    let { data, error } = await supabase
+    let { data: urls, error } = await supabase
         .from('urls')
         .delete()
         .eq({ id: req.params.id });
     if (error) {
         res.status(500).send('Error al eliminar la URL');
     } else {
-        res.send(data);
+        res.send(urls);
     }
 });
 
