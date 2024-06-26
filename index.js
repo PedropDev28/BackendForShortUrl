@@ -34,16 +34,26 @@ app.get('/urls', async (req, res) => {
 });
 
 app.get('/:id', async (req, res) => {
-    let { data: urls, error } = await supabase
-        .from('Urls')
-        .select('*')
-        .eq({ id: req.params.id });
-    if (error) {
-        res.status(500).send('Error al obtener la URL ' + error.message);
-    } else {
-        res.send(urls);
+    try {
+        const { data: urls, error } = await supabase
+            .from('Urls')
+            .select('long_Url')
+            .eq('id', req.params.id);
+
+        if (error) {
+            throw new Error('Error al obtener la URL: ' + error.message);
+        }
+
+        if (!urls || urls.length === 0) {
+            res.status(404).send('URL no encontrada');
+        } else {
+            res.redirect(urls[0].long_Url);
+        }
+    } catch (err) {
+        res.status(500).send(err.message);
     }
 });
+
 
 app.post('/urls', async (req, res) => {
     const url = req.body.url;
