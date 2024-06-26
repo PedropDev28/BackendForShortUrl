@@ -19,7 +19,9 @@ app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 let urls = [];
-let id = 0;
+let id = 1;
+
+
 
 app.get('/urls', async (req, res) => {
     let { data: urls, error } = await supabase
