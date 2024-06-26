@@ -18,6 +18,10 @@ const corsOptions = {
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
+let urls = [];
+let id = 0;
+
+
 app.get('/urls', async (req, res) => {
     let { data: urls, error } = await supabase
         .from('Urls')
@@ -29,46 +33,62 @@ app.get('/urls', async (req, res) => {
     }
 });
 
-app.get('/:id', async (req, res) => { 
-    let { data, error } = await supabase
+app.get('/:id', async (req, res) => {
+    let { data: urls, error } = await supabase
         .from('Urls')
         .select('*')
-        .eq('id', req.params.id);
+        .eq({ id: req.params.id });
     if (error) {
         res.status(500).send('Error al obtener la URL ' + error.message);
     } else {
-        res.send(data);
+        res.send(urls);
     }
 });
 
 app.post('/urls', async (req, res) => {
     const url = req.body.url;
     const idUser = req.body.idUser;
-    const shortUrl = 'acortado.vercel.app/' + Math.random().toString(36).substring(7);
-    let { data, error } = await supabase
+    let { data: insertedUrls, error: insertError } = await supabase
         .from('Urls')
-        .insert([{ long_Url: url, short_Url: shortUrl, user: idUser }])
+        .insert([{ long_Url: url, user: idUser }])
+        .select(); 
+
+    if (insertError) {
+        res.status(500).send('Error al insertar la URL ' + insertError.message);
+        return;
+    }
+
+    // Obtener el último ID insertado
+    const lastInsertedId = insertedUrls[0].id;
+    const shortUrl = `acortado.vercel.app/${lastInsertedId}`;
+
+    // Actualizar la URL acortada
+    let { data: updatedUrls, error: updateError } = await supabase
+        .from('Urls')
+        .update({ short_Url: shortUrl })
+        .eq('id', lastInsertedId)
         .select();
-    if (error) {
-        res.status(500).send('Error al insertar la URL ' + error.message);
+
+    if (updateError) {
+        res.status(500).send('Error al actualizar la URL acortada ' + updateError.message);
     } else {
-        res.send(data);
+        res.send(updatedUrls);
     }
 });
 
-app.delete('/urls/:id', async (req, res) => { 
-    let { data, error } = await supabase
-        .from('Urls')
+app.delete('/:id', async (req, res) => {
+    let { data: urls, error } = await supabase
+        .from('urls')
         .delete()
-        .eq('id', req.params.id); 
+        .eq({ id: req.params.id });
     if (error) {
-        res.status(500).send('Error al eliminar la URL' + error.message);
+        res.status(500).send('Error al eliminar la URL');
     } else {
-        res.send(data);
+        res.send(urls);
     }
 });
 
-app.options('*', cors(corsOptions)); 
+app.options('*', cors(corsOptions)); // Manejar solicitudes preflight
 
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
