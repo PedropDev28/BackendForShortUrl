@@ -25,7 +25,7 @@ app.get('/:id', (req, res) => {
 
 app.post('/urls', (req, res) => {
     const url = req.body.url;
-    const shortUrl = 'http://localhost:3000/' + id;
+    const shortUrl = 'acortado.vercel.app' + id;
     urls.push({ id: id++, url, shortUrl });
     res.send(urls);
 });
