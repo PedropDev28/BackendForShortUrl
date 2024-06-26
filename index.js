@@ -4,8 +4,13 @@ const app = express();
 const cors = require('cors');
 const port = 3000;
 
+const corsOptions = {
+    origin: 'http://localhost:4200',
+    optionsSuccessStatus: 200 
+};
 
-app.use(bodyParser.json(), cors());
+app.use(bodyParser.json());
+app.use(cors(corsOptions));
 
 let urls = [];
 let id = 0;
