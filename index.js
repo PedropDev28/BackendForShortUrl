@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
 const cors = require('cors');
+
+const app = express();
 const port = 3000;
 
 const corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: '*', // Permitir todas las orígenes
     optionsSuccessStatus: 200 
 };
 
@@ -30,11 +31,12 @@ app.get('/:id', (req, res) => {
 
 app.post('/urls', (req, res) => {
     const url = req.body.url;
-    const shortUrl = 'acortado.vercel.app' + id;
+    const shortUrl = 'acortado.vercel.app/' + id;
     urls.push({ id: id++, url, shortUrl });
     res.send(urls);
 });
 
+app.options('*', cors(corsOptions)); // Manejar solicitudes preflight
 
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
