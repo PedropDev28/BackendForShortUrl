@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-import { createClient } from '@supabase/supabase-js'
-import { environment } from './env.js';
+const { createClient } = require('@supabase/supabase-js');
+const environment = require('./env');
 const supabaseUrl = environment.supabaseUrl;
 const supabaseKey = environment.supabaseKey;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -11,7 +11,7 @@ const app = express();
 const port = 3000;
 
 const corsOptions = {
-    origin: '*', // Permitir todas las orígenes
+    origin: '*',
     optionsSuccessStatus: 200 
 };
 
@@ -23,10 +23,10 @@ let id = 0;
 
 app.get('/urls', async (req, res) => {
     let { data: urls, error } = await supabase
-        .from('urls')
+        .from('Urls')
         .select('*');
     if (error) {
-        res.status(500).send('Error al obtener las URLs');
+        res.status(500).send('Error al obtener las URLs' + error.message);
     } else {
         res.send(urls);
     }
@@ -34,7 +34,7 @@ app.get('/urls', async (req, res) => {
 
 app.get('/:id', async (req, res) => {
     let { data, error } = await supabase
-        .from('urls')
+        .from('Urls')
         .select('*')
         .eq({ id: req.params.id });
     if (error) {
@@ -50,7 +50,7 @@ app.post('/urls', async (req, res) => {
     const shortUrl = 'acortado.vercel.app/' + id;
     if(!idUser) {
         let { data, error } = await supabase
-            .from('urls')
+            .from('Urls')
             .insert([{ long_Url: url, short_Url: shortUrl}]);
         if (error) {
             res.status(500).send('Error al insertar la URL');
@@ -59,7 +59,7 @@ app.post('/urls', async (req, res) => {
         }
     }else{
         let { data, error } = await supabase
-            .from('urls')
+            .from('Urls')
             .insert([{ long_Url: url, short_Url: shortUrl, user: idUser}]);
         if (error) {
             res.status(500).send('Error al insertar la URL');
