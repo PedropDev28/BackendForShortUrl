@@ -36,6 +36,11 @@ app.post('/urls', (req, res) => {
     res.send(urls);
 });
 
+app.delete('/:id', (req, res) => {
+    urls = urls.filter(url => url.id !== parseInt(req.params.id));
+    res.send(urls);
+});
+
 app.options('*', cors(corsOptions)); // Manejar solicitudes preflight
 
 app.listen(port, () => {
