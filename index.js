@@ -53,7 +53,10 @@ app.get('/:id', async (req, res) => {
         if (!urls || urls.length === 0) {
             res.status(404).send('URL no encontrada');
         } else {
-            const longUrl = urls[0].long_Url;
+            let longUrl = urls[0].long_Url;
+            if (!/^https?:\/\//i.test(longUrl)) {
+                longUrl = 'http://' + longUrl;
+            }
             console.log(longUrl);
             res.redirect(301, longUrl);  // Utiliza el código de estado 301 para redirección permanente
         }
@@ -61,6 +64,7 @@ app.get('/:id', async (req, res) => {
         res.status(500).send(err.message);
     }
 });
+
 
 
 app.post('/urls', async (req, res) => {
