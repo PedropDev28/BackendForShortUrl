@@ -34,11 +34,17 @@ app.get('/urls', async (req, res) => {
 });
 
 app.get('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    if (isNaN(id)) {
+        return res.status(400).send('ID inválido');
+    }
+
     try {
         const { data: urls, error } = await supabase
             .from('Urls')
             .select('long_Url')
-            .eq('id', req.params.id);
+            .eq('id', id);
 
         if (error) {
             throw new Error('Error al obtener la URL: ' + error.message);
@@ -47,7 +53,9 @@ app.get('/:id', async (req, res) => {
         if (!urls || urls.length === 0) {
             res.status(404).send('URL no encontrada');
         } else {
-            res.redirect(urls[0].long_Url);
+            const longUrl = urls[0].long_Url;
+            console.log(longUrl);
+            res.redirect(301, longUrl);  // Utiliza el código de estado 301 para redirección permanente
         }
     } catch (err) {
         res.status(500).send(err.message);
