@@ -58,7 +58,7 @@ app.get('/:id', async (req, res) => {
                 longUrl = 'http://' + longUrl;
             }
             console.log(longUrl);
-            res.redirect(301, longUrl);  // Utiliza el código de estado 301 para redirección permanente
+            res.redirect(301, longUrl);
         }
     } catch (err) {
         res.status(500).send(err.message);
